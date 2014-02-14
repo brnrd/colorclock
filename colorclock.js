@@ -17,7 +17,16 @@ window.cc = function cc() {
 		clearTimeout(timer);
 		step();
 	}
-
+	function paddedHex(n){
+        	 var hex = ((n < 10) ? "0" : "") + n.toString(16);
+        	return (hex.length === 1) ? "0" + hex : hex;
+    	}
+	 function rgb2hex (r, g, b) {
+		r = paddedHex(r);
+        	g = (g !== undefined) ? paddedHex(g) : r;
+		b = (b !== undefined) ? paddedHex(b) : r;
+        	return "#" + r + g + b;
+       }
 	function step() {
 		var date = new Date();
 		if (date.toString() !== lastTime) {
@@ -30,26 +39,22 @@ window.cc = function cc() {
 			var minutesRatio = (minutes/59);
 			var secondsRatio = (seconds/59);
 
-			var bodyRed = Math.floor((hoursRatio - (hoursRatio * 10 / 100)) * 256);
-			var bodyGreen = Math.floor((minutesRatio - (minutesRatio * 10 / 100)) * 256);
-			var bodyBlue = Math.floor((secondsRatio - (secondsRatio * 10 / 100)) * 256);
+			var bodyRed = 255-Math.floor((hours*100/24)* 2.55);
+			var bodyGreen = 255-Math.floor((minutes*100/60)* 2.55);
+			var bodyBlue = 255-Math.floor((seconds*100/60)* 2.55);
 
-			var displayRed = Math.floor((hoursRatio - (hoursRatio * 20 / 100)) * 256);
-			var displayGreen = Math.floor((minutesRatio - (minutesRatio * 20 / 100)) * 256);
-			var displayBlue = Math.floor((secondsRatio - (secondsRatio * 20 / 100)) * 256);
+			var displayRed = (bodyRed>10)? bodyRed-10:0;
+			var displayGreen = (bodyGreen>10)? bodyGreen-10:0;
+			var displayBlue = (bodyBlue>10)? bodyBlue-10:0;
 
-			var shadowRed = Math.floor((hoursRatio - (hoursRatio * 30 / 100)) * 256);
-			var shadowGreen = Math.floor((minutesRatio - (minutesRatio * 30 / 100)) * 256);
-			var shadowBlue = Math.floor((secondsRatio - (secondsRatio * 30 / 100)) * 256);
+			var shadowRed = (bodyRed>20)? bodyRed-20:0;
+			var shadowGreen = (bodyGreen>20)? bodyGreen-20:0;
+			var shadowBlue = (bodyBlue>20)? bodyBlue-20:0;
 
-			var highlightRed = Math.floor(hoursRatio * 256);
-			var highlightGreen = Math.floor(minutesRatio * 256);
-			var highlightBlue = Math.floor(secondsRatio * 256);
-
-			dom.body.style.backgroundColor = 'rgb(' + bodyRed + ',' + bodyGreen + ',' + bodyBlue + ')';
-			dom.display.style.color = 'rgb(' + displayRed + ',' + displayGreen + ',' + displayBlue + ')';
-			dom.display.style.textShadow = '-1px -2px 2px rgb(' + shadowRed + ',' + shadowGreen + ',' + shadowBlue + ')';
-			dom.display.style.textHighlight = '1px 2px 2px rgb(' + highlightRed + ',' + highlightGreen + ',' + highlightBlue + ')';
+			dom.body.style.backgroundColor = rgb2hex(bodyRed,bodyGreen,bodyBlue);
+			dom.display.style.color = rgb2hex(displayRed ,displayGreen,displayBlue);
+			dom.display.style.textShadow = '-1px -2px 2px '+rgb2hex(shadowRed,shadowGreen,shadowBlue);
+		
 			// Display time
 			if (hexaMode === true) {
 				var time = '' + ((hours < 16) ? '0' + hours.toString(16) : hours.toString(16));
